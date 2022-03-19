@@ -1,0 +1,40 @@
+{
+  "name": "@hexlet/code",
+  "version": "0.0.1",
+  "description": "[![Actions Status](https://github.com/artanizo/backend-project-lvl3/workflows/hexlet-check/badge.svg)](https://github.com/artanizo/backend-project-lvl3/actions)",
+  "main": "index.js",
+  "scripts": {
+    "test": "npx jest --bail"
+  },
+  "engines": {
+    "node": ">=14"
+  },
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/artanizo/backend-project-lvl3.git"
+  },
+  "author": "Irina Fomina",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/artanizo/backend-project-lvl3/issues"
+  },
+  "homepage": "https://github.com/artanizo/backend-project-lvl3#readme",
+  "devDependencies": {
+    "@jest/globals": "^27.5.1",
+    "eslint": "^8.10.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.25.4",
+    "eslint-plugin-jest": "^26.1.1",
+    "jest": "^27.5.1",
+    "jest-cli": "^27.5.1",
+    "nock": "^13.2.4"
+  },
+  "dependencies": {
+    "axios": "^0.26.1",
+    "commander": "^9.0.0"
+  },
+  "bin": {
+    "page-loader": "bin/pageLoader.js"
+  }
+}
