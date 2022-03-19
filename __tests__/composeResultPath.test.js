@@ -17,11 +17,6 @@ describe('composeResultPath', () => {
     expect(result).toBe(`${tmpDir}/yandex-ru-test-path.html`);
   });
 
-  test('works with subdomain', () => {
-    const result = composeResultPath('https://ru.hexlet.io/console', tmpDir);
-    expect(result).toBe(`${tmpDir}/ru-hexlet-io-console.html`);
-  });
-
   test('works with no path', () => {
     const result = composeResultPath('https://ru.hexlet.io', tmpDir);
     expect(result).toBe(`${tmpDir}/ru-hexlet-io.html`);
