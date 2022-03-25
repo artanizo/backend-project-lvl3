@@ -28,7 +28,7 @@ beforeEach(async () => {
     .get('/')
     .reply(
       200,
-      '<html><head></head><body><img src="/hello.png">test page</body></html>',
+      '<html><head></head><body><img src="/hello.png"><img src="https://some-site.ru/not-local.png">test page</body></html>',
     )
     .get('/hello.png')
     .replyWithFile(200, pngFixture);
@@ -50,7 +50,7 @@ describe('processPage', () => {
     expect(resultFilePath).toBe(`${tmpDir}/test-page-ru.html`);
   });
 
-  test('saves images', async () => {
+  test('saves local images', async () => {
     const [htmlpath, filesDirPath] = composeResultPath(
       'https://test-image-page.ru',
       tmpDir,
@@ -64,7 +64,7 @@ describe('processPage', () => {
 
     const expectedImgPath = `${filesDirPath}/test-image-page-ru-hello.png`;
     expect(content).toBe(
-      `<html><head></head><body><img src="${expectedImgPath}">test page</body></html>`,
+      `<html><head></head><body><img src="${expectedImgPath}"><img src="https://some-site.ru/not-local.png">test page</body></html>`,
     );
 
     const files = await fs.readdir(filesDirPath);

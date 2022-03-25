@@ -2,7 +2,7 @@ import axios from 'axios';
 import * as fs from 'fs/promises';
 import * as cheerio from 'cheerio';
 import _ from 'lodash';
-import { getNormalizedName } from './composeResultPath.js';
+import { getNormalizedName, parseUrl } from './composeResultPath.js';
 
 const downloadFile = (url, type = 'json') => axios
   .get(url, { responseType: type })
@@ -20,12 +20,12 @@ const processImages = ($, filesDir, baseUrl) => {
   const imgUrls = [];
   imgTags.each((i, item) => {
     const imgUrl = $(item).attr('src');
-    if (imageExts.some((ext) => _.endsWith(imgUrl, ext))) {
-      const realUrl = _.startsWith(imgUrl, '/') ? `${baseUrl}${imgUrl}` : imgUrl;
-      const normalizedName = getNormalizedName(realUrl, true);
+    if (imageExts.some((ext) => _.endsWith(imgUrl, ext)) && _.startsWith(imgUrl, '/')) {
+      const parsedUrl = parseUrl({ url: imgUrl, baseUrl });
+      const normalizedName = getNormalizedName({ parsedUrl, isFileLink: true });
       const innerPath = [filesDir, normalizedName].join('/');
       imgUrls.push({
-        url: realUrl,
+        url: parsedUrl.toString(),
         filename: innerPath,
       });
       $(item).attr('src', innerPath);

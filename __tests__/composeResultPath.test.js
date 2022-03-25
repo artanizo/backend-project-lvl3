@@ -4,7 +4,7 @@ import {
 import path from 'path';
 import * as fs from 'fs/promises';
 import os from 'os';
-import composeResultPath, { getNormalizedName } from '../src/composeResultPath.js';
+import composeResultPath, { getNormalizedName, parseUrl } from '../src/composeResultPath.js';
 
 let tmpDir;
 beforeEach(async () => {
@@ -27,12 +27,14 @@ describe('composeResultPath', () => {
 
 describe('getNormalizedName', () => {
   test('process file link correct', () => {
-    const htmlpath = getNormalizedName('https://cdn2.hexlet.io/assets/error-pages/404.png', true);
+    const parsedUrl = parseUrl({ url: 'https://cdn2.hexlet.io/assets/error-pages/404.png', baseUrl: 'https://cdn2.hexlet.io/assets/error-pages/404.png' });
+    const htmlpath = getNormalizedName({ parsedUrl, isFileLink: true });
     expect(htmlpath).toBe('cdn2-hexlet-io-assets-error-pages-404.png');
   });
 
   test('process file link correct 2', () => {
-    const htmlpath = getNormalizedName('https://test-image-page.ru/hello.png', true);
+    const parsedUrl = parseUrl({ url: '/hello.png', baseUrl: 'https://test-image-page.ru' });
+    const htmlpath = getNormalizedName({ parsedUrl, isFileLink: true });
     expect(htmlpath).toBe('test-image-page-ru-hello.png');
   });
 });
