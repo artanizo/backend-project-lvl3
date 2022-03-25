@@ -16,6 +16,7 @@ const __dirname = dirname(__filename);
 let tmpDir;
 
 const pngFixture = path.resolve(__dirname, '__fixtures__', 'test.png');
+const cssFixture = path.resolve(__dirname, '__fixtures__', 'test.css');
 
 beforeEach(async () => {
   tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'page-loader-'));
@@ -24,14 +25,16 @@ beforeEach(async () => {
     .get('/')
     .reply(200, '<html><head></head><body>test page</body></html>');
 
-  nock('https://test-image-page.ru')
+  nock('https://test-with-files-page.ru')
     .get('/')
     .reply(
       200,
-      '<html><head></head><body><img src="/hello.png"><img src="https://some-site.ru/not-local.png">test page</body></html>',
+      '<html><head><link rel="stylesheet" media="all" href="https://cdn2.hexlet.io/assets/menu.css"><link rel="stylesheet" media="all" href="/assets/application.css" /></head><body><img src="/hello.png"><img src="https://some-site.ru/not-local.png">test page</body></html>',
     )
     .get('/hello.png')
-    .replyWithFile(200, pngFixture);
+    .replyWithFile(200, pngFixture)
+    .get('/assets/application.css')
+    .replyWithFile(200, cssFixture);
 });
 
 describe('processPage', () => {
@@ -50,25 +53,28 @@ describe('processPage', () => {
     expect(resultFilePath).toBe(`${tmpDir}/test-page-ru.html`);
   });
 
-  test('saves local images', async () => {
+  test('saves local files', async () => {
     const [htmlpath, filesDirPath] = composeResultPath(
-      'https://test-image-page.ru',
+      'https://test-with-files-page.ru',
       tmpDir,
     );
     const resultFilePath = await processPage(
-      'https://test-image-page.ru',
+      'https://test-with-files-page.ru',
       htmlpath,
       filesDirPath,
     );
     const content = await fs.readFile(resultFilePath, { encoding: 'utf-8' });
 
-    const expectedImgPath = `${filesDirPath}/test-image-page-ru-hello.png`;
+    const expectedImgPath = `${filesDirPath}/test-with-files-page-ru-hello.png`;
+    const expectedLinkPath = `${filesDirPath}/test-with-files-page-ru-assets-application.css`;
     expect(content).toBe(
-      `<html><head></head><body><img src="${expectedImgPath}"><img src="https://some-site.ru/not-local.png">test page</body></html>`,
+      `<html><head><link rel="stylesheet" media="all" href="https://cdn2.hexlet.io/assets/menu.css"><link rel="stylesheet" media="all" href="${expectedLinkPath}"></head><body><img src="${expectedImgPath}"><img src="https://some-site.ru/not-local.png">test page</body></html>`,
     );
 
     const files = await fs.readdir(filesDirPath);
     const imageFiles = files.filter((x) => _.endsWith(x, 'png'));
+    const cssFiles = files.filter((x) => _.endsWith(x, 'css'));
     expect(imageFiles.length).toBe(1);
+    expect(cssFiles.length).toBe(1);
   });
 });
